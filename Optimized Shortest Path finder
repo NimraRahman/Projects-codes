@@ -1,0 +1,41 @@
+import heapq
+
+
+class DijkstraSP:
+
+    def __init__(self, G, root):
+        self.root = root
+        self.edge_to = [None] * G.V
+        self.dist_to = [float('inf')] * G.V
+        self.visited = [False] * G.V
+        self.dist_to[root] = 0
+
+        pq = [(0, root)]
+        while pq:
+            _, v = heapq.heappop(pq)
+            if self.visited[v]:
+                continue
+            self.visited[v] = True
+            for e in G.adj[v]:
+                self.relax(e, pq)
+
+    def relax(self, e, pq):
+        v = e.From()
+        w = e.To()
+        new_dist = self.dist_to[v] + e.Weight()
+        if new_dist < self.dist_to[w]:
+            self.dist_to[w] = new_dist
+            self.edge_to[w] = v
+            heapq.heappush(pq, (new_dist, w))
+
+    def shortest_path(self, destination):
+        path = []
+        while destination != self.root:
+            path.append(destination)
+            destination = self.edge_to[destination]
+        path.append(self.root)
+        path.reverse()
+        if path[-1] != self.root:
+            print(f"There is no connection between {self.root} and {destination}")
+        else:
+            print(" -> ".join(str(v) for v in path))
